@@ -1,6 +1,7 @@
 package BusinessLayer;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public abstract class MenuItem implements Serializable {
     private String title;
@@ -80,4 +81,24 @@ public abstract class MenuItem implements Serializable {
 
     public abstract double computePrice();
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MenuItem item = (MenuItem) obj;
+        return Objects.equals(title, item.title);
+    }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }

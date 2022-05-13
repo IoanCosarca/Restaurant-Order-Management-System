@@ -1,8 +1,11 @@
 package PresentationLayer;
 
 import BusinessLayer.BaseProduct;
+import BusinessLayer.MenuItem;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,9 +36,15 @@ public class Administrator extends JFrame {
 
     protected JButton LogOut;
 
-    private DefaultTableModel model;
-    private JTable table;
+    protected DefaultTableModel model;
+    protected JTable table;
     private JScrollPane slider;
+
+    protected JButton Add;
+    protected JButton Remove;
+    protected DefaultTableModel modelCompose;
+    protected JTable tableCompose;
+    private JScrollPane scroll;
 
     public Administrator(ArrayList<String> columns)
     {
@@ -70,6 +79,8 @@ public class Administrator extends JFrame {
         CreateProduct       = new JButton("Create Product");
         GenerateReports     = new JButton("Generate Reports");
         LogOut              = new JButton("LOGOUT");
+        Add                 = new JButton("ADD");
+        Remove              = new JButton("REMOVE");
 
         JPanel OrderInfo = new JPanel();
         getContentPane().add(OrderInfo);
@@ -129,26 +140,78 @@ public class Administrator extends JFrame {
         LogOut.setBounds(50,575,150,50);
         getContentPane().add(LogOut);
 
-        model   = new DefaultTableModel(columns.toArray(), 0);
+        model   = new DefaultTableModel(columns.toArray(),0);
         table   = new JTable(model);
         slider  = new JScrollPane(table);
 
         slider.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         slider.setBounds(500,25,800,350);
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int i = table.getSelectedRow();
+                TitleField.setText((String) model.getValueAt(i,0));
+                RatingField.setText(String.valueOf(model.getValueAt(i,1)));
+                CaloriesField.setText(String.valueOf(model.getValueAt(i,2)));
+                ProteinField.setText(String.valueOf(model.getValueAt(i,3)));
+                FatField.setText(String.valueOf(model.getValueAt(i,4)));
+                SodiumField.setText(String.valueOf(model.getValueAt(i,5)));
+                PriceField.setText(String.valueOf(model.getValueAt(i,6)));
+            }
+        });
         getContentPane().add(slider);
+
+        Add.setFont(FontBtn);
+        Add.setBounds(875,380,100,50);
+        getContentPane().add(Add);
+
+        modelCompose    = new DefaultTableModel(columns.toArray(),0);
+        tableCompose    = new JTable(modelCompose);
+        scroll          = new JScrollPane(tableCompose);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setBounds(500,450,800,200);
+        getContentPane().add(scroll);
+
+        Remove.setFont(FontBtn);
+        Remove.setBounds(850,675,150,50);
+        getContentPane().add(Remove);
 
         this.setVisible(false);
     }
 
-    public void addRows(List<BaseProduct> baseProducts)
+    public void addRows(List<MenuItem> products)
     {
-        for (BaseProduct item : baseProducts)
+        for (MenuItem item : products)
         {
             Object[] o = new Object[]{item.getTitle(), item.getRating(), item.getCalories(), item.getProtein(), item.getFat(), item.getSodium(), item.getPrice()};
             model.addRow(o);
         }
-        /*model   = new DefaultTableModel(data, column.toArray());
-        table   = new JTable(model);
-        slider  = new JScrollPane(table);*/
+    }
+
+    public void addRow(BaseProduct product)
+    {
+        Object[] o = new Object[]{product.getTitle(), product.getRating(), product.getCalories(), product.getProtein(), product.getFat(), product.getSodium(), product.getPrice()};
+        model.addRow(o);
+    }
+
+    public void removeRow(int index) {
+        model.removeRow(index);
+    }
+
+    public void updateRow(int index, BaseProduct product)
+    {
+        Object[] o = new Object[]{product.getTitle(), product.getRating(), product.getCalories(), product.getProtein(), product.getFat(), product.getSodium(), product.getPrice()};
+        model.insertRow(index, o);
+    }
+
+    public void Refresh()
+    {
+        TitleField.setText("");
+        RatingField.setText("");
+        CaloriesField.setText("");
+        ProteinField.setText("");
+        FatField.setText("");
+        SodiumField.setText("");
+        PriceField.setText("");
     }
 }

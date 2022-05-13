@@ -4,13 +4,13 @@ import java.util.List;
 
 public interface IDeliveryServiceProcessing {
 
-    public List<BaseProduct> importProducts();
+    public List<MenuItem> importProducts();
 
-    public void addProduct(BaseProduct product);
+    public boolean addProduct(BaseProduct product);
 
-    public void deleteProduct();
+    public void deleteProduct(int index);
 
-    public void modifyProduct();
+    public void modifyProduct(int index, BaseProduct product);
 
     public void createProduct();
 

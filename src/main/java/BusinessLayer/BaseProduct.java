@@ -15,18 +15,7 @@ public class BaseProduct extends MenuItem implements Serializable {
     }
 
     @Override
-    public boolean equals(final Object obj)
-    {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        BaseProduct product = (BaseProduct) obj;
-        return Objects.equals(this.getTitle(), product.getTitle());
+    public String toString() {
+        return super.toString();
     }
 }

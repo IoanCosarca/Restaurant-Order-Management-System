@@ -67,8 +67,4 @@ public class Register extends JFrame {
 
         this.setVisible(false);
     }
-
-    public void showPopUp(String s) {
-        JOptionPane.showMessageDialog(this, s);
-    }
 }

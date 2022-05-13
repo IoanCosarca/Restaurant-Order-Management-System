@@ -5,16 +5,15 @@ import DataAccessLayer.SerializeOrder;
 import PresentationLayer.Observer;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class DeliveryService extends Observable implements IDeliveryServiceProcessing {
-    private Collection<BaseProduct> baseMenuItems;
-    private List<BaseProduct> distinctItems;
+    private List<BaseProduct> baseMenuItems;
+    private static List<MenuItem> menuItems;
     private List<Observer> observers;
     private HashMap<Order, Collection<MenuItem>> OrderInfo;
     private SerializeItem serializeItem = new SerializeItem();
@@ -23,8 +22,11 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     public DeliveryService()
     {
         baseMenuItems = new ArrayList<>();
-        distinctItems = new ArrayList<>();
         OrderInfo = new HashMap<>();
+    }
+
+    public static List<MenuItem> getList() {
+        return menuItems;
     }
 
     public int hashCode() {
@@ -49,54 +51,71 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     }
 
     @Override
-    public List<BaseProduct> importProducts()
+    public List<MenuItem> importProducts()
     {
         try
         {
             File file = new File("products.csv");
             InputStream inputStream = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            baseMenuItems = br.lines().skip(1).map(ExtractItem).collect(Collectors.toList());
+            baseMenuItems = br.lines().skip(1).map(ExtractItem).filter(distinctByName(p -> p.getTitle())).collect(Collectors.toList());
             br.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        distinctItems = baseMenuItems.stream().distinct().collect(Collectors.toList());
+        List<MenuItem> list = serializeItem.getProducts();
+        menuItems = new ArrayList<>();
 
-        return distinctItems;
+        if (list.size() == 0) {
+            menuItems.addAll(baseMenuItems);
+        }
+        else {
+            menuItems.addAll(list);
+        }
+        serializeItem.addProducts(menuItems);
+
+        return menuItems;
+    }
+
+    public static <T> Predicate<T> distinctByName(Function<? super T, Object> keyExtractor)
+    {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     private Function<String, BaseProduct> ExtractItem = (line) ->
     {
         String[] p = line.split(",");
-        String Title = p[0];
-        double Rating = Double.parseDouble(p[1]);
+        String Title    = p[0];
+        double Rating   = Double.parseDouble(p[1]);
         double Calories = Double.parseDouble(p[2]);
-        double Protein = Double.parseDouble(p[3]);
-        double Fat = Double.parseDouble(p[4]);
-        double Sodium = Double.parseDouble(p[5]);
-        double Price = Double.parseDouble(p[6]);
+        double Protein  = Double.parseDouble(p[3]);
+        double Fat      = Double.parseDouble(p[4]);
+        double Sodium   = Double.parseDouble(p[5]);
+        double Price    = Double.parseDouble(p[6]);
         BaseProduct item = new BaseProduct(Title, Rating, Calories, Protein, Fat, Sodium, Price);
 
         return item;
     };
 
     @Override
-    public void addProduct(BaseProduct product)
+    public boolean addProduct(BaseProduct product)
     {
-        List<MenuItem> menuList = serializeItem.getProducts();
-        if (!findProduct(product, menuList))
+        if (!findProduct(product, baseMenuItems))
         {
             baseMenuItems.add(product);
+            menuItems.add(product);
             serializeItem.addProduct(product);
+            return true;
         }
+        return false;
     }
 
-    private boolean findProduct(BaseProduct product, List<MenuItem> baseMenuItems)
+    private boolean findProduct(BaseProduct product, List<BaseProduct> baseMenuItems)
     {
-        for (MenuItem menuItem : baseMenuItems) {
-            if (menuItem.equals(product)) {
+        for (BaseProduct item : baseMenuItems) {
+            if (item.equals(product)) {
                 return true;
             }
         }
@@ -104,13 +123,20 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     }
 
     @Override
-    public void deleteProduct() {
-
+    public void deleteProduct(int index)
+    {
+        MenuItem item = menuItems.get(index);
+        serializeItem.deleteProduct(item);
+        baseMenuItems.remove(index);
+        menuItems.remove(index);
     }
 
     @Override
-    public void modifyProduct() {
-
+    public void modifyProduct(int index, BaseProduct product)
+    {
+        baseMenuItems.set(index, product);
+        menuItems.set(index, product);
+        serializeItem.updateProduct(index, product);
     }
 
     @Override

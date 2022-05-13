@@ -25,7 +25,7 @@ public class SerializeItem {
         }
     }
 
-    public boolean addProduct(BaseProduct product)
+    public void addProduct(BaseProduct product)
     {
         List<MenuItem> list;
         try
@@ -44,7 +44,6 @@ public class SerializeItem {
         catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     public List<MenuItem> getProducts()
@@ -64,19 +63,58 @@ public class SerializeItem {
         return ListProducts;
     }
 
-    public boolean addProduct(List<MenuItem> CompositeProduct)
+    public void addProducts(List<MenuItem> products)
     {
         try
         {
             FileOutputStream file = new FileOutputStream(FileMenuItems);
             ObjectOutputStream out = new ObjectOutputStream(file);
-            out.writeObject(CompositeProduct);
+            out.writeObject(products);
             out.close();
             file.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
+    }
+
+    public void deleteProduct(MenuItem menuItem)
+    {
+        List<MenuItem> list;
+        try
+        {
+            list = getProducts();
+            list.remove(menuItem);
+            if (list.size() == 0) {
+                list = new ArrayList<>();
+            }
+            new SerializeItem();
+            FileOutputStream file = new FileOutputStream(FileMenuItems);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            out.writeObject(list);
+            out.close();
+            file.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateProduct(int index, MenuItem item)
+    {
+        List<MenuItem> list;
+        try
+        {
+            list = getProducts();
+            list.set(index, item);
+            FileOutputStream file = new FileOutputStream(FileMenuItems);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            out.writeObject(list);
+            out.close();
+            file.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

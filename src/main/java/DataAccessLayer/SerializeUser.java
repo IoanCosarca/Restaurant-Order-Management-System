@@ -61,7 +61,6 @@ public class SerializeUser {
             file.close();
         }
         catch (IOException | ClassNotFoundException e) {
-            System.out.println("OK");
             e.printStackTrace();
         }
         return RegisteredUsers;

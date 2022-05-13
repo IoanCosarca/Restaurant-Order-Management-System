@@ -57,8 +57,4 @@ public class Login extends JFrame {
 
         this.setVisible(true);
     }
-
-    public void showPopUp(String s) {
-        JOptionPane.showMessageDialog(this, s);
-    }
 }
