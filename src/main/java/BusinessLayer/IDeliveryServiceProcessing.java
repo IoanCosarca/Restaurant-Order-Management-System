@@ -1,22 +1,29 @@
 package BusinessLayer;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IDeliveryServiceProcessing {
 
-    public List<MenuItem> importProducts();
+    List<MenuItem> importProducts();
 
-    public boolean addProduct(BaseProduct product);
+    boolean addProduct(BaseProduct product);
 
-    public void deleteProduct(int index);
+    void deleteProduct(int index);
 
-    public void modifyProduct(int index, BaseProduct product);
+    void modifyProduct(int index, MenuItem menuItem);
 
-    public void createProduct();
+    boolean createProduct(CompositeProduct compositeProduct);
 
-    public void generateReports();
+    void generateReport(int startHour, int endHour);
 
-    public void createOrder();
+    void generateReport(int numberOfTimes);
 
-    public void searchProduct();
+    void generateReport(int numberOfTimes, double value);
+
+    void generateReport(Date date);
+
+    void createOrder(User UserID, List<MenuItem> orderComponents);
+
+    List<MenuItem> searchProducts(String keyword, double rating, double calories, double protein, double fat, double sodium, double price);
 }

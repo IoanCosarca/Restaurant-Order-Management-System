@@ -1,9 +1,10 @@
 package DataAccessLayer;
 
+import BusinessLayer.MenuItem;
 import BusinessLayer.Order;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SerializeOrder {
@@ -24,42 +25,35 @@ public class SerializeOrder {
         }
     }
 
-    public boolean addOrder(Order order)
+    public void addOrders(HashMap<Order, List<MenuItem>> orders)
     {
-        List<Order> list;
         try
         {
-            list = getOrder();
-            if (list.size() == 0) {
-                list = new ArrayList<>();
-            }
             FileOutputStream file = new FileOutputStream(FileOrders);
             ObjectOutputStream out = new ObjectOutputStream(file);
-            list.add(order);
-            out.writeObject(list);
+            out.writeObject(orders);
             out.close();
             file.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
     }
 
-    private List<Order> getOrder()
+    public HashMap<Order, List<MenuItem>> getOrders()
     {
-        List<Order> ListOrders = new ArrayList<>();
+        HashMap<Order, List<MenuItem>> listOrders = new HashMap<>();
         try
         {
             FileInputStream file = new FileInputStream(FileOrders);
             ObjectInputStream in = new ObjectInputStream(file);
-            ListOrders = (List<Order>) in.readObject();
+            listOrders = (HashMap) in.readObject();
             in.close();
             file.close();
         }
         catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return ListOrders;
+        return listOrders;
     }
 }

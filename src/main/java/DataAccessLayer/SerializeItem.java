@@ -1,6 +1,5 @@
 package DataAccessLayer;
 
-import BusinessLayer.BaseProduct;
 import BusinessLayer.MenuItem;
 
 import java.io.*;
@@ -25,7 +24,7 @@ public class SerializeItem {
         }
     }
 
-    public void addProduct(BaseProduct product)
+    public void addProduct(MenuItem product)
     {
         List<MenuItem> list;
         try
@@ -53,7 +52,7 @@ public class SerializeItem {
         {
             FileInputStream file = new FileInputStream(FileMenuItems);
             ObjectInputStream in = new ObjectInputStream(file);
-            ListProducts = (List<MenuItem>) in.readObject();
+            ListProducts = (List) in.readObject();
             in.close();
             file.close();
         }

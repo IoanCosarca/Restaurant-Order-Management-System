@@ -3,9 +3,11 @@ package BusinessLayer;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private int id;
     private String username;
     private String password;
     private String type;
+    private int OrdersPlaced;
 
     public User(String username, String password, String type)
     {
@@ -14,10 +16,15 @@ public class User implements Serializable {
         this.type = type;
     }
 
-    public User(String username, String password)
-    {
-        this.username = username;
-        this.password = password;
+    public User() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -42,5 +49,13 @@ public class User implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getOrdersPlaced() {
+        return OrdersPlaced;
+    }
+
+    public void setOrdersPlaced() {
+        OrdersPlaced++;
     }
 }

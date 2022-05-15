@@ -27,7 +27,7 @@ public class SerializeUser {
         }
     }
 
-    public boolean addUser(User user)
+    public void addUser(User user)
     {
         List<User> list;
         try
@@ -46,7 +46,6 @@ public class SerializeUser {
         catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     public List<User> getUsers()
@@ -56,7 +55,7 @@ public class SerializeUser {
         {
             FileInputStream file = new FileInputStream(FileUsers);
             ObjectInputStream in = new ObjectInputStream(file);
-            RegisteredUsers = (List<User>) in.readObject();
+            RegisteredUsers = (List) in.readObject();
             in.close();
             file.close();
         }

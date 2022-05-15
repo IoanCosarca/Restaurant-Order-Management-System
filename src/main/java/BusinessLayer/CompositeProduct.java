@@ -1,20 +1,95 @@
 package BusinessLayer;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CompositeProduct extends MenuItem {
-    private List<BaseProduct> products;
+public class CompositeProduct extends MenuItem implements Serializable {
+    private List<BaseProduct> ProductComposition = new ArrayList<BaseProduct>();
 
-    public CompositeProduct(String title, double rating, double calories, double protein, double fat, double sodium, double price) {
-        super(title, rating, calories, protein, fat, sodium, price);
+    @Override
+    public String computeTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = "[C] " + title;
     }
 
     @Override
-    public double computePrice() {
-        return 0;
+    public double computeRating()
+    {
+        int k = ProductComposition.size();
+        double rating = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            rating += baseProduct.computeRating();
+        }
+        return rating / k;
     }
 
-    public void add(MenuItem item) {}
+    @Override
+    public double computeCalories()
+    {
+        double calories = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            calories += baseProduct.computeCalories();
+        }
+        return calories;
+    }
 
-    public void remove(MenuItem item) {}
+    @Override
+    public double computeProtein()
+    {
+        double protein = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            protein += baseProduct.computeProtein();
+        }
+        return protein;
+    }
+
+    @Override
+    public double computeFat()
+    {
+        double fat = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            fat += baseProduct.computeFat();
+        }
+        return fat;
+    }
+
+    @Override
+    public double computeSodium()
+    {
+        double sodium = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            sodium += baseProduct.computeSodium();
+        }
+        return sodium;
+    }
+
+    @Override
+    public double computePrice()
+    {
+        double price = 0;
+        for (BaseProduct baseProduct : ProductComposition) {
+            price += baseProduct.computePrice();
+        }
+        return price;
+    }
+
+    public void add(BaseProduct product) {
+        ProductComposition.add(product);
+        System.out.println(ProductComposition);
+        System.out.println("");
+    }
+
+    public void remove(BaseProduct product) {
+        ProductComposition.remove(product);
+        System.out.println(ProductComposition);
+        System.out.println("");
+    }
+
+    public BaseProduct getValueAt(int index) {
+        return ProductComposition.get(index);
+    }
 }

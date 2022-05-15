@@ -2,12 +2,13 @@ package BusinessLayer;
 
 import PresentationLayer.Observer;
 
+import java.io.Serializable;
 import java.util.List;
 
-abstract class Observable {
-    abstract void addObserver(Observer o);
+abstract class Observable implements Serializable {
+    public abstract void registerObserver(Observer o);
 
-    abstract void deleteObserver(Observer o);
+    public abstract void unregisterObserver(Observer o);
 
-    abstract void notifyObservers(Order order, List<MenuItem> list);
+    public abstract void notifyObservers(Order order, List<MenuItem> list);
 }

@@ -2,16 +2,25 @@ package BusinessLayer;
 
 import DataAccessLayer.SerializeUser;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
-public class UserBLL {
+public class UserBLL implements Serializable {
     SerializeUser serializer = new SerializeUser();
 
     public boolean addUser(User newUser)
     {
         if (!findUser(newUser))
         {
+            List<User> list = serializer.getUsers();
+            if (list.size() == 0) {
+                newUser.setId(1);
+            }
+            else
+            {
+                int id = list.get(list.size() - 1).getId();
+                newUser.setId(id + 1);
+            }
             serializer.addUser(newUser);
             return true;
         }
@@ -22,35 +31,21 @@ public class UserBLL {
     {
         List<User> list = serializer.getUsers();
         for (User u : list) {
-            if (u.getUsername().equals(newUser.getUsername())) {
+            if (u.getPassword().equals(newUser.getPassword()) && u.getUsername().equals(newUser.getUsername())) {
                 return true;
             }
         }
         return false;
     }
 
-    public String verifyAndFindType(User user)
+    public User getUser(String username, String password)
     {
         List<User> list = serializer.getUsers();
         for (User u : list) {
-            if (u.getPassword().equals(user.getPassword()) && u.getUsername().equals(user.getUsername())) {
-                return u.getType();
+            if (u.getPassword().equals(password) && u.getUsername().equals(username)) {
+                return u;
             }
         }
         return null;
-    }
-
-    public String findType(User user)
-    {
-        String type = "";
-        List<User> list = serializer.getUsers();
-        for (User u : list) {
-            if (u.equals(user))
-            {
-                type += u.getType();
-                break;
-            }
-        }
-        return type;
     }
 }

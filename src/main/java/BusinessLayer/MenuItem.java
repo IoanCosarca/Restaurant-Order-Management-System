@@ -4,82 +4,36 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public abstract class MenuItem implements Serializable {
-    private String title;
-    private double rating;
-    private double calories;
-    private double protein;
-    private double fat;
-    private double sodium;
-    private double price;
+    String title;
+    double rating;
+    double calories;
+    double protein;
+    double fat;
+    double sodium;
+    double price;
+    int timesOrdered = 0;
 
-    public MenuItem(String title, double rating, double calories, double protein, double fat, double sodium, double price)
-    {
-        this.title = title;
-        this.rating = rating;
-        this.calories = calories;
-        this.protein = protein;
-        this.fat = fat;
-        this.sodium = sodium;
-        this.price = price;
-    }
+    public abstract String computeTitle();
 
-    public String getTitle() {
-        return title;
-    }
+    public abstract double computeRating();
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public abstract double computeCalories();
 
-    public double getRating() {
-        return rating;
-    }
+    public abstract double computeProtein();
 
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
+    public abstract double computeFat();
 
-    public double getCalories() {
-        return calories;
-    }
-
-    public void setCalories(double calories) {
-        this.calories = calories;
-    }
-
-    public double getProtein() {
-        return protein;
-    }
-
-    public void setProtein(double protein) {
-        this.protein = protein;
-    }
-
-    public double getFat() {
-        return fat;
-    }
-
-    public void setFat(double fat) {
-        this.fat = fat;
-    }
-
-    public double getSodium() {
-        return sodium;
-    }
-
-    public void setSodium(double sodium) {
-        this.sodium = sodium;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public abstract double computeSodium();
 
     public abstract double computePrice();
+
+    public int computeTimesOrdered() {
+        return this.timesOrdered;
+    }
+
+    public void setTimesOrdered() {
+        timesOrdered++;
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -100,5 +54,57 @@ public abstract class MenuItem implements Serializable {
     @Override
     public String toString() {
         return title;
+    }
+
+    public boolean FilterTitle(String keyword) {
+        return title.contains(keyword);
+    }
+
+    public boolean FilterRating(double rating)
+    {
+        if (Double.compare(rating, -1) == 0) {
+            return true;
+        }
+        return Double.compare(rating, this.rating) == 0;
+    }
+
+    public boolean FilterCalories(double calories)
+    {
+        if (Double.compare(calories, -1) == 0) {
+            return true;
+        }
+        return Double.compare(calories, this.calories) == 0;
+    }
+
+    public boolean FilterProtein(double protein)
+    {
+        if (Double.compare(protein, -1) == 0) {
+            return true;
+        }
+        return Double.compare(protein, this.protein) == 0;
+    }
+
+    public boolean FilterFat(double fat)
+    {
+        if (Double.compare(fat, -1) == 0) {
+            return true;
+        }
+        return Double.compare(fat, this.fat) == 0;
+    }
+
+    public boolean FilterSodium(double sodium)
+    {
+        if (Double.compare(sodium, -1) == 0) {
+            return true;
+        }
+        return Double.compare(sodium, this.sodium) == 0;
+    }
+
+    public boolean FilterPrice(double price)
+    {
+        if (Double.compare(price, -1) == 0) {
+            return true;
+        }
+        return Double.compare(price, this.price) == 0;
     }
 }
