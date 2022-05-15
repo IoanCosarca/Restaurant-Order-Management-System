@@ -20,6 +20,7 @@ public class UserBLL implements Serializable {
             {
                 int id = list.get(list.size() - 1).getId();
                 newUser.setId(id + 1);
+                newUser.setOrdersPlaced();
             }
             serializer.addUser(newUser);
             return true;
@@ -47,5 +48,9 @@ public class UserBLL implements Serializable {
             }
         }
         return null;
+    }
+
+    public void updateUser(User currentUser){
+        serializer.updateUser(currentUser);
     }
 }

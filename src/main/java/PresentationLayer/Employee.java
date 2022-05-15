@@ -50,7 +50,7 @@ public class Employee extends JFrame implements Observer {
     @Override
     public void update(Order order, List<MenuItem> products)
     {
-        Object[] o = new Object[]{order.getOrderID(), order.getClient(), order.getOrderDate(), products.toString()};
+        Object[] o = new Object[]{order.getOrderID(), order.getClient().getUsername(), order.getOrderDate(), products.toString()};
         model.addRow(o);
         this.setVisible(true);
     }

@@ -2,7 +2,6 @@ package BusinessLayer;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Order implements Serializable {
     private int orderID;
@@ -58,7 +57,7 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        return "Order with id " + this.orderID + ", placed by the user " + this.client + ", on " + this.orderDate;
+        return "Order with id " + this.orderID + ", placed by the user " + this.client.getUsername() + ", on " + this.orderDate;
     }
 
     @Override

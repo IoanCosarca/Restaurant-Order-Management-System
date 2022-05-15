@@ -210,6 +210,7 @@ public class Controller implements ActionListener {
                 if (deliveryService.createProduct(compositeProduct))
                 {
                     administrator.addRow(compositeProduct);
+                    compositeProduct.setTimesOrdered();
                     administrator.RefreshCompose(columns);
                     compositeProduct = new CompositeProduct();
                 }
@@ -233,8 +234,6 @@ public class Controller implements ActionListener {
                 SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
                 String rawDate = administrator.DateField.getText();
                 Date date = myFormat.parse(rawDate);
-                //System.out.println(date.getHours());
-                //System.out.println(LocalDateTime.now().getHour());
                 deliveryService.generateReport(StartHour, EndHour);
                 deliveryService.generateReport(NumberOfTimes);
                 deliveryService.generateReport(NumberOfTimes, Value);
@@ -303,6 +302,7 @@ public class Controller implements ActionListener {
         if (e.getSource() == client.CreateOrder)
         {
             deliveryService.createOrder(CurrentUser, OrderComponents);
+            userBLL.updateUser(CurrentUser);
             message.showPopUp("A new order was placed");
             client.RefreshOrder(columns);
             OrderComponents = new ArrayList<>();

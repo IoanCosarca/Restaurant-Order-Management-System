@@ -61,6 +61,7 @@ public class CreateReports {
             report3.open();
             Paragraph header = new Paragraph("The clients that have ordered more than " + numberOfTimes + " times, orders that sum up more than " + value + " are:");
             report3.add(header);
+            System.out.println(specificOrders.size());
             for (Order orderInfo : specificOrders)
             {
                 Paragraph paragraph = new Paragraph(orderInfo.getClient().getUsername() + " (" + orderInfo.getClient().getOrdersPlaced() + " times)");
@@ -82,6 +83,7 @@ public class CreateReports {
             report4.open();
             Paragraph header = new Paragraph("In date " + date + " the following products have been ordered");
             report4.add(header);
+            System.out.println(orderedProducts.size());
             for (MenuItem menuItem : orderedProducts)
             {
                 Paragraph paragraph = new Paragraph(menuItem.computeTitle() + " was ordered " + menuItem.computeTimesOrdered() + " times");

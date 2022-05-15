@@ -1,5 +1,6 @@
 package DataAccessLayer;
 
+import BusinessLayer.MenuItem;
 import BusinessLayer.User;
 
 import java.io.*;
@@ -63,5 +64,26 @@ public class SerializeUser {
             e.printStackTrace();
         }
         return RegisteredUsers;
+    }
+
+    public void updateUser(User currentUser)
+    {
+        try
+        {
+            List<User> userList = getUsers();
+            for (User user : userList) {
+                if (user.equals(currentUser)) {
+                    user.incOrdersPlaced();
+                }
+            }
+            FileOutputStream file = new FileOutputStream(FileUsers);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            out.writeObject(userList);
+            out.close();
+            file.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

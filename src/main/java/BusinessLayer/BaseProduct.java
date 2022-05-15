@@ -12,6 +12,7 @@ public class BaseProduct extends MenuItem implements Serializable {
         this.fat = fat;
         this.sodium = sodium;
         this.price = price;
+        this.timesOrdered = 0;
     }
 
     @Override

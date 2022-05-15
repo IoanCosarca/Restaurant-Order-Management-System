@@ -11,7 +11,7 @@ public abstract class MenuItem implements Serializable {
     double fat;
     double sodium;
     double price;
-    int timesOrdered = 0;
+    int timesOrdered;
 
     public abstract String computeTitle();
 
@@ -32,6 +32,10 @@ public abstract class MenuItem implements Serializable {
     }
 
     public void setTimesOrdered() {
+        timesOrdered = 0;
+    }
+
+    public void incTimesOrdered() {
         timesOrdered++;
     }
 

@@ -3,6 +3,7 @@ package BusinessLayer;
 import DataAccessLayer.CreateReports;
 import DataAccessLayer.SerializeItem;
 import DataAccessLayer.SerializeOrder;
+import DataAccessLayer.SerializeUser;
 import PresentationLayer.Observer;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -12,19 +13,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 public class DeliveryService extends Observable implements IDeliveryServiceProcessing, Serializable {
     private List<BaseProduct> baseMenuItems;
     private List<MenuItem> menuItems;
     private List<Observer> observers;
     private HashMap<Order, List<MenuItem>> OrderHashMap;
+    private SerializeUser serializeUser = new SerializeUser();
     private SerializeItem serializeItem = new SerializeItem();
     private SerializeOrder serializeOrder = new SerializeOrder();
     private CreateReports createReports = new CreateReports();
@@ -165,7 +166,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(int numberOfTimes)
     {
-        List<MenuItem> PopularProducts = menuItems.stream().filter(p -> p.computeTimesOrdered() > numberOfTimes).collect(Collectors.toList());
+        List<MenuItem> PopularProducts = importProducts().stream().filter(p -> p.computeTimesOrdered() > numberOfTimes).collect(Collectors.toList());
         createReports.Report2(PopularProducts);
     }
 
@@ -212,10 +213,15 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         serializeOrder.addOrders(OrderHashMap);
         createBill(order, orderComponents);
         for (MenuItem item : orderComponents) {
-            item.setTimesOrdered();
-            System.out.println(item.computeTimesOrdered());
+            for (MenuItem menuItem : menuItems) {
+                if (item.equals(menuItem))
+                {
+                    menuItem.incTimesOrdered();
+                    System.out.println(menuItem.computeTimesOrdered());
+                }
+            }
         }
-        user.setOrdersPlaced();
+        serializeItem.addProducts(menuItems);
         notifyObservers(order, orderComponents);
     }
 
