@@ -8,9 +8,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
@@ -33,25 +31,40 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
 
     public DeliveryService()
     {
-        baseMenuItems = new ArrayList<>();
-        observers = new ArrayList<>();
-        OrderHashMap = new HashMap<>();
+        baseMenuItems   = new ArrayList<>();
+        observers       = new ArrayList<>();
+        OrderHashMap    = new HashMap<>();
     }
 
     protected boolean isWellFormed()
     {
-        return true;
+        int n = 0;
+        for (MenuItem item : menuItems)
+        {
+            n++;
+            if (Objects.equals(item.computeTitle(),""))
+                return false;
+            if (item.computeRating() < 0)
+                return false;
+            if (item.computeCalories() < 0)
+                return false;
+            if (item.computeProtein() < 0)
+                return false;
+            if (item.computeFat() < 0)
+                return false;
+            if (item.computeSodium() < 0)
+                return false;
+            if (item.computePrice() < 0)
+                return false;
+        }
+        return n == menuItems.size();
     }
 
     @Override
-    public void registerObserver(Observer o) {
-        observers.add(o);
-    }
+    public void registerObserver(Observer o) {observers.add(o);}
 
     @Override
-    public void unregisterObserver(Observer o) {
-        observers.remove(o);
-    }
+    public void unregisterObserver(Observer o) {observers.remove(o);}
 
     @Override
     public void notifyObservers(Order order, List<MenuItem> list) {
@@ -84,6 +97,8 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
             menuItems.addAll(list);
         }
         serializeItem.addProducts(menuItems);
+        assert menuItems.size() > 0;
+        assert isWellFormed();
         return menuItems;
     }
 
@@ -109,8 +124,14 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public boolean addProduct(BaseProduct product)
     {
-        if (newProduct(product, menuItems)) {
+        assert !Objects.equals(product.computeTitle(),"") && product.computeRating() >= 0 && product.computeCalories() >= 0 && product.computeProtein() >= 0 && product.computeFat() >= 0 && product.computeSodium() >= 0 && product.computePrice() >= 0;
+        int sizePre = menuItems.size();
+        if (newProduct(product, menuItems))
+        {
             menuItems.add(product);
+            int sizePost = menuItems.size();
+            assert sizePost == sizePre + 1;
+            assert isWellFormed();
             serializeItem.addProduct(product);
             return true;
         }
@@ -130,24 +151,37 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void deleteProduct(int index)
     {
+        assert index >= 0 && index < menuItems.size();
+        int sizePre = menuItems.size();
         MenuItem item = menuItems.get(index);
         serializeItem.deleteProduct(item);
         menuItems.remove(index);
+        int sizePost = menuItems.size();
+        assert sizePost == sizePre - 1;
+        assert isWellFormed();
     }
 
     @Override
     public void modifyProduct(int index, MenuItem menuItem)
     {
-        assert index >= 0 && index < menuItems.size() && menuItem != null;
+        assert index >= 0 && index < menuItems.size();
+        assert !Objects.equals(menuItem.computeTitle(),"") && menuItem.computeRating() >= 0 && menuItem.computeCalories() >= 0 && menuItem.computeProtein() >= 0 && menuItem.computeFat() >= 0 && menuItem.computeSodium() >= 0 && menuItem.computePrice() >= 0;
         menuItems.set(index, menuItem);
+        assert menuItems.get(index) == menuItem;
+        assert isWellFormed();
         serializeItem.updateProduct(index, menuItem);
     }
 
     @Override
     public boolean createProduct(CompositeProduct compositeProduct)
     {
+        assert compositeProduct != null;
+        int sizePre = menuItems.size();
         if (newProduct(compositeProduct, menuItems)) {
             menuItems.add(compositeProduct);
+            int sizePost = menuItems.size();
+            assert sizePost == sizePre + 1;
+            assert isWellFormed();
             serializeItem.addProduct(compositeProduct);
             return true;
         }
@@ -157,6 +191,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(int startHour, int endHour)
     {
+        assert startHour >= 0 && endHour <= 23 && startHour <= endHour;
         List<Order> IntervalOrders = OrderHashMap.keySet().stream().filter(o -> o.getHour() >= startHour).filter(o -> o.getHour() <= endHour).collect(Collectors.toList());
         createReports.Report1(IntervalOrders);
     }
@@ -164,6 +199,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(int numberOfTimes)
     {
+        assert numberOfTimes > 0;
         List<MenuItem> PopularProducts = importProducts().stream().filter(p -> p.computeTimesOrdered() >= numberOfTimes).collect(Collectors.toList());
         createReports.Report2(PopularProducts);
     }
@@ -171,6 +207,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(int numberOfTimes, double value)
     {
+        assert numberOfTimes > 0 && value > 0;
         List<Order> SpecificOrders = OrderHashMap.keySet().stream().filter(o -> o.getClient().getOrdersPlaced() >= numberOfTimes)
                 .filter(o -> calculateOrderValue(OrderHashMap.get(o)) >= value).filter(distinctByName(o -> o.getClient().getUsername())).toList();
         createReports.Report3(numberOfTimes, value, SpecificOrders);
@@ -179,19 +216,16 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(Date date)
     {
+        assert date != null;
         List<Order> OrdersInDay = OrderHashMap.keySet().stream().filter(o -> o.getDay() == date.getDate())
                 .filter(o -> o.getMonth() == date.getMonth() + 1).filter(o -> o.getYear() == date.getYear() + 1900).toList();
         List<MenuItem> OrderedProducts = OrdersInDay.stream().map(i -> OrderHashMap.get(i)).flatMap(List::stream).filter(distinctByName(p -> p.computeTitle())).toList();
         createReports.Report4(date, OrderedProducts);
     }
 
-    public void importOrderDetails() {
-        OrderHashMap = serializeOrder.getOrders();
-    }
+    public void importOrderDetails() {OrderHashMap = serializeOrder.getOrders();}
 
-    public HashMap<Order, List<MenuItem>> getOrderHashMap() {
-        return OrderHashMap;
-    }
+    public HashMap<Order, List<MenuItem>> getOrderHashMap() {return OrderHashMap;}
 
     private double calculateOrderValue(List<MenuItem> orderComponents)
     {
@@ -205,8 +239,12 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void createOrder(User user, List<MenuItem> orderComponents)
     {
+        assert user != null && orderComponents.size() > 0;
+        int sizePre = OrderHashMap.size();
         Order order = new Order(OrderHashMap.size() + 1, user, LocalDateTime.now());
         OrderHashMap.put(order, orderComponents);
+        int sizePost = OrderHashMap.size();
+        assert sizePost == sizePre + 1;
         serializeOrder.addOrders(OrderHashMap);
         createBill(order, orderComponents);
         user.incOrdersPlaced();

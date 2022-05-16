@@ -5,10 +5,12 @@ import BusinessLayer.MenuItem;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Client extends JFrame {
+    private final ArrayList<String> columns;
     private final JLabel SearchLabel;
     private final JLabel SearchByTitle;
     protected JTextField SearchTitle;
@@ -37,7 +39,7 @@ public class Client extends JFrame {
     protected JTable OrderTable;
     private JScrollPane scrollOrder;
 
-    public Client(ArrayList<String> columns, List<MenuItem> menuItems)
+    public Client(List<MenuItem> menuItems)
     {
         getContentPane().setBounds(0,0,600,800);
         this.setSize(1400, 800);
@@ -46,6 +48,12 @@ public class Client extends JFrame {
         this.setResizable(false);
         this.setTitle("Client Operations");
         getContentPane().setLayout(null);
+
+        columns = new ArrayList<>();
+        for (Field f : MenuItem.class.getDeclaredFields()) {
+            columns.add(f.getName());
+        }
+        columns.remove(columns.size() - 1);
 
         SearchLabel         = new JLabel("Search Criteria");
         SearchByTitle       = new JLabel("Title");
@@ -127,7 +135,7 @@ public class Client extends JFrame {
         this.setVisible(false);
     }
 
-    public void RefreshOrder(ArrayList<String> columns)
+    public void RefreshOrder()
     {
         getContentPane().remove(scrollOrder);
         Order       = new DefaultTableModel(columns.toArray(),0);
@@ -138,7 +146,7 @@ public class Client extends JFrame {
         getContentPane().add(scrollOrder);
     }
 
-    public void filterTable(ArrayList<String> columns, List<MenuItem> results)
+    public void filterTable(List<MenuItem> results)
     {
         getContentPane().remove(scrollMenu);
         Menu = new DefaultTableModel(columns.toArray(),0);

@@ -10,7 +10,6 @@ public class Login extends JFrame {
     protected JTextField Password;
     protected JButton Login;
     protected JButton Register;
-    private final JLabel ResetPassword;
 
     public Login()
     {
@@ -29,7 +28,6 @@ public class Login extends JFrame {
         Password        = new JTextField();
         Login           = new JButton("LOGIN");
         Register        = new JButton("REGISTER");
-        ResetPassword   = new JLabel("Reset Password");
 
         JPanel LoginCredentials = new JPanel();
         getContentPane().add(LoginCredentials);
@@ -44,9 +42,6 @@ public class Login extends JFrame {
         Password.setFont(MyFont);
         LoginCredentials.add(Password);
 
-        ResetPassword.setBounds(250,200,200,50);
-        getContentPane().add(ResetPassword);
-
         Login.setFont(MyFont);
         Login.setBounds(50, 250,150,50);
         getContentPane().add(Login);
@@ -56,5 +51,12 @@ public class Login extends JFrame {
         getContentPane().add(Register);
 
         this.setVisible(true);
+    }
+
+    public void Refresh()
+    {
+        this.setVisible(true);
+        UserName.setText(null);
+        Password.setText(null);
     }
 }

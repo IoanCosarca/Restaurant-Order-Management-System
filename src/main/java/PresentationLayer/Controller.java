@@ -4,12 +4,8 @@ import BusinessLayer.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Controller implements ActionListener {
     private final UserBLL userBLL;
@@ -21,8 +17,6 @@ public class Controller implements ActionListener {
     private Employee employee;
     private Client client;
     private User CurrentUser;
-
-    private final ArrayList<String> columns;
     private List<MenuItem> menuItems;
     private List<MenuItem> results;
     private CompositeProduct compositeProduct;
@@ -30,33 +24,27 @@ public class Controller implements ActionListener {
 
     public Controller(UserBLL userBLL, Login login, MessagePopUp message, DeliveryService deliveryService)
     {
-        this.userBLL = userBLL;
-        this.login = login;
-        this.message = message;
-        this.deliveryService = deliveryService;
-
-        columns = new ArrayList<>();
-        for (Field f : MenuItem.class.getDeclaredFields()) {
-            columns.add(f.getName());
-        }
-        columns.remove(columns.size() - 1);
+        this.userBLL            = userBLL;
+        this.login              = login;
+        this.message            = message;
+        this.deliveryService    = deliveryService;
         register = new Register();
-        administrator = new Administrator(columns);
+        administrator = new Administrator();
         employee = new Employee(deliveryService.getOrderHashMap());
-        deliveryService.registerObserver(employee);
-        deliveryService.importOrderDetails();
-        client = new Client(columns, new ArrayList<>());
+        client = new Client(new ArrayList<>());
         CurrentUser = new User();
         menuItems = new ArrayList<>();
         compositeProduct = new CompositeProduct();
         OrderComponents = new ArrayList<>();
-
+        deliveryService.registerObserver(employee);
+        deliveryService.importOrderDetails();
         login.Login.addActionListener(this);
         login.Register.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e)
     {
+        int iProductsAdmin = administrator.table.getSelectedRow();
         if (e.getSource() == login.Register)
         {
             login.setVisible(false);
@@ -79,9 +67,7 @@ public class Controller implements ActionListener {
         if (e.getSource() == register.GoBack)
         {
             register.setVisible(false);
-            login.setVisible(true);
-            login.UserName.setText(null);
-            login.Password.setText(null);
+            login.Refresh();
         }
 
         if (e.getSource() == login.Login) {
@@ -90,23 +76,18 @@ public class Controller implements ActionListener {
                 message.showPopUp("Bad username/password");
             } else {
                 if (CurrentUser.getType().equals("ADMINISTRATOR")) {
-                    administrator = new Administrator(columns);
+                    administrator = new Administrator();
                     administrator.setVisible(true);
                     administrator.ImportProducts.addActionListener(this);
                     administrator.AddProduct.addActionListener(this);
-                    administrator.AddProduct.setEnabled(false);
                     administrator.DeleteProduct.addActionListener(this);
-                    administrator.DeleteProduct.setEnabled(false);
                     administrator.ModifyProduct.addActionListener(this);
-                    administrator.ModifyProduct.setEnabled(false);
                     administrator.CreateProduct.addActionListener(this);
-                    administrator.CreateProduct.setEnabled(false);
                     administrator.GenerateReports.addActionListener(this);
                     administrator.LogOut.addActionListener(this);
                     administrator.Add.addActionListener(this);
-                    administrator.Add.setEnabled(false);
                     administrator.Remove.addActionListener(this);
-                    administrator.Remove.setEnabled(false);
+                    administrator.SwitchButtons(false);
                     login.setVisible(false);
                 }
                 if (CurrentUser.getType().equals("EMPLOYEE")) {
@@ -116,7 +97,7 @@ public class Controller implements ActionListener {
                 if (CurrentUser.getType().equals("CLIENT")) {
                     if (menuItems.size() != 0) {
                         results = menuItems;
-                        client = new Client(columns, deliveryService.importProducts());
+                        client = new Client(deliveryService.importProducts());
                         client.setVisible(true);
                         client.Search.addActionListener(this);
                         client.CreateOrder.addActionListener(this);
@@ -134,12 +115,7 @@ public class Controller implements ActionListener {
 
         if (e.getSource() == administrator.ImportProducts)
         {
-            administrator.AddProduct.setEnabled(true);
-            administrator.DeleteProduct.setEnabled(true);
-            administrator.ModifyProduct.setEnabled(true);
-            administrator.CreateProduct.setEnabled(true);
-            administrator.Add.setEnabled(true);
-            administrator.Remove.setEnabled(true);
+            administrator.SwitchButtons(true);
             if (administrator.model.getRowCount() == 0)
             {
                 menuItems = deliveryService.importProducts();
@@ -165,28 +141,24 @@ public class Controller implements ActionListener {
             }
         }
 
-        if (e.getSource() == administrator.DeleteProduct)
-        {
-            int index = administrator.table.getSelectedRow();
-            if (index != -1)
+        if (e.getSource() == administrator.DeleteProduct) {
+            if (iProductsAdmin != -1)
             {
-                deliveryService.deleteProduct(index);
-                administrator.removeRow(index);
+                deliveryService.deleteProduct(iProductsAdmin);
+                administrator.removeRow(iProductsAdmin);
             }
         }
 
         if (e.getSource() == administrator.ModifyProduct)
         {
-            int index = administrator.table.getSelectedRow();
             MenuItem menuItem = computeProduct();
-            deliveryService.modifyProduct(index, menuItem);
-            administrator.updateRow(index, menuItem);
+            deliveryService.modifyProduct(iProductsAdmin, menuItem);
+            administrator.updateRow(iProductsAdmin, menuItem);
         }
 
         if (e.getSource() == administrator.Add)
         {
-            int index = administrator.table.getSelectedRow();
-            BaseProduct baseProduct = (BaseProduct) deliveryService.importProducts().get(index);
+            BaseProduct baseProduct = (BaseProduct) deliveryService.importProducts().get(iProductsAdmin);
             compositeProduct.add(baseProduct);
             administrator.addComponent(baseProduct);
         }
@@ -211,7 +183,7 @@ public class Controller implements ActionListener {
                 {
                     administrator.addRow(compositeProduct);
                     compositeProduct.setTimesOrdered();
-                    administrator.RefreshCompose(columns);
+                    administrator.RefreshCompose();
                     compositeProduct = new CompositeProduct();
                 }
                 else {
@@ -227,20 +199,18 @@ public class Controller implements ActionListener {
         {
             try
             {
-                int StartHour = Integer.parseInt(administrator.StartField.getText());
-                int EndHour = Integer.parseInt(administrator.EndField.getText());
-                int NumberOfTimes = Integer.parseInt(administrator.NumberField.getText());
-                double Value = Double.parseDouble(administrator.ValueField.getText());
+                int StartHour       = Integer.parseInt(administrator.StartField.getText());
+                int EndHour         = Integer.parseInt(administrator.EndField.getText());
+                int NumberOfTimes   = Integer.parseInt(administrator.NumberField.getText());
+                double Value        = Double.parseDouble(administrator.ValueField.getText());
                 SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
-                String rawDate = administrator.DateField.getText();
-                Date date = myFormat.parse(rawDate);
+                Date date = myFormat.parse(administrator.DateField.getText());
                 deliveryService.generateReport(StartHour, EndHour);
                 deliveryService.generateReport(NumberOfTimes);
                 deliveryService.generateReport(NumberOfTimes, Value);
                 deliveryService.generateReport(date);
             }
             catch (Exception ex) {
-                ex.printStackTrace();
                 message.showPopUp("Invalid Parameters to generate reports");
             }
         }
@@ -248,9 +218,7 @@ public class Controller implements ActionListener {
         if (e.getSource() == administrator.LogOut)
         {
             administrator.setVisible(false);
-            login.setVisible(true);
-            login.UserName.setText(null);
-            login.Password.setText(null);
+            login.Refresh();
         }
 
         if (e.getSource() == client.Search)
@@ -277,7 +245,7 @@ public class Controller implements ActionListener {
                 price = Double.parseDouble(client.SearchPrice.getText());
             else price = -1;
             results = deliveryService.searchProducts(keyword, rating, calories, protein, fat, sodium, price);
-            client.filterTable(columns, results);
+            client.filterTable(results);
         }
 
         if (e.getSource() == client.AddProduct)
@@ -304,16 +272,14 @@ public class Controller implements ActionListener {
             deliveryService.createOrder(CurrentUser, OrderComponents);
             userBLL.updateUser(CurrentUser);
             message.showPopUp("A new order was placed");
-            client.RefreshOrder(columns);
+            client.RefreshOrder();
             OrderComponents = new ArrayList<>();
         }
 
         if (e.getSource() == client.LogOut)
         {
             client.setVisible(false);
-            login.setVisible(true);
-            login.UserName.setText(null);
-            login.Password.setText(null);
+            login.Refresh();
         }
     }
 
