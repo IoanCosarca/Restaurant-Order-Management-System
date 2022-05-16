@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Register extends JFrame {
-    private JLabel Name;
+    private final JLabel Name;
     protected JTextField UserName;
-    private JLabel Pass;
+    private final JLabel Pass;
     protected JTextField Password;
-    private JLabel Type;
+    private final JLabel Type;
     protected JComboBox<String> UserTypes;
     protected JButton Register;
     protected JButton GoBack;
@@ -33,7 +33,7 @@ public class Register extends JFrame {
         types[0]        = "ADMINISTRATOR";
         types[1]        = "EMPLOYEE";
         types[2]        = "CLIENT";
-        UserTypes       = new JComboBox<String>(types);
+        UserTypes       = new JComboBox<>(types);
         Register        = new JButton("REGISTER");
         GoBack          = new JButton("GO BACK");
 

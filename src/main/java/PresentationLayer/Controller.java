@@ -12,17 +12,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class Controller implements ActionListener {
-    private UserBLL userBLL;
-    private Login login;
-    private MessagePopUp message;
-    private DeliveryService deliveryService;
+    private final UserBLL userBLL;
+    private final Login login;
+    private final MessagePopUp message;
+    private final DeliveryService deliveryService;
     private Register register;
     private Administrator administrator;
     private Employee employee;
     private Client client;
     private User CurrentUser;
 
-    private ArrayList<String> columns;
+    private final ArrayList<String> columns;
     private List<MenuItem> menuItems;
     private List<MenuItem> results;
     private CompositeProduct compositeProduct;
@@ -116,7 +116,7 @@ public class Controller implements ActionListener {
                 if (CurrentUser.getType().equals("CLIENT")) {
                     if (menuItems.size() != 0) {
                         results = menuItems;
-                        client = new Client(columns, menuItems);
+                        client = new Client(columns, deliveryService.importProducts());
                         client.setVisible(true);
                         client.Search.addActionListener(this);
                         client.CreateOrder.addActionListener(this);

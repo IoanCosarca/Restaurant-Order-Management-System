@@ -1,17 +1,13 @@
 package DataAccessLayer;
 
-import BusinessLayer.MenuItem;
 import BusinessLayer.User;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
 public class SerializeUser {
-    private File FileUsers;
+    private final File FileUsers;
 
     public SerializeUser()
     {
@@ -71,11 +67,13 @@ public class SerializeUser {
         try
         {
             List<User> userList = getUsers();
+            int i = 0;
             for (User user : userList) {
                 if (user.equals(currentUser)) {
-                    user.incOrdersPlaced();
+                    i = userList.indexOf(user);
                 }
             }
+            userList.set(i, currentUser);
             FileOutputStream file = new FileOutputStream(FileUsers);
             ObjectOutputStream out = new ObjectOutputStream(file);
             out.writeObject(userList);

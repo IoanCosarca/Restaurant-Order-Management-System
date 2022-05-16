@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SerializeItem {
-    private File FileMenuItems;
+    private final File FileMenuItems;
 
     public SerializeItem()
     {

@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Login extends JFrame {
-    private JLabel Name;
+    private final JLabel Name;
     protected JTextField UserName;
-    private JLabel Pass;
+    private final JLabel Pass;
     protected JTextField Password;
     protected JButton Login;
     protected JButton Register;
-    private JLabel ResetPassword;
+    private final JLabel ResetPassword;
 
     public Login()
     {

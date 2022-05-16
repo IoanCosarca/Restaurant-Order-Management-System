@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Employee extends JFrame implements Observer {
-    private DefaultTableModel model;
-    private JTable table;
-    private JScrollPane scroll;
+    private final DefaultTableModel model;
+    private final JTable table;
+    private final JScrollPane scroll;
 
     public Employee(HashMap<Order, List<MenuItem>> orderHashMap)
     {

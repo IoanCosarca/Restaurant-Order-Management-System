@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Administrator extends JFrame {
-    private JLabel Title;
+    private final JLabel Title;
     protected JTextField TitleField;
-    private JLabel Rating;
+    private final JLabel Rating;
     protected JTextField RatingField;
-    private JLabel Calories;
+    private final JLabel Calories;
     protected JTextField CaloriesField;
-    private JLabel Protein;
+    private final JLabel Protein;
     protected JTextField ProteinField;
-    private JLabel Fat;
+    private final JLabel Fat;
     protected JTextField FatField;
-    private JLabel Sodium;
+    private final JLabel Sodium;
     protected JTextField SodiumField;
-    private JLabel Price;
+    private final JLabel Price;
     protected JTextField PriceField;
 
     protected JButton ImportProducts;
@@ -36,7 +36,7 @@ public class Administrator extends JFrame {
 
     protected DefaultTableModel model;
     protected JTable table;
-    private JScrollPane slider;
+    private final JScrollPane slider;
 
     protected JButton Add;
     protected JButton Remove;
@@ -44,15 +44,15 @@ public class Administrator extends JFrame {
     protected JTable tableCompose;
     private JScrollPane scroll;
 
-    private JLabel StartHour;
+    private final JLabel StartHour;
     protected JTextField StartField;
-    private JLabel EndHour;
+    private final JLabel EndHour;
     protected JTextField EndField;
-    private JLabel Number;
+    private final JLabel Number;
     protected JTextField NumberField;
-    private JLabel Value;
+    private final JLabel Value;
     protected JTextField ValueField;
-    private JLabel Date;
+    private final JLabel Date;
     protected JTextField DateField;
 
     public Administrator(ArrayList<String> columns)
@@ -66,7 +66,6 @@ public class Administrator extends JFrame {
         getContentPane().setLayout(null);
 
         Font FontBtn        = new Font("", Font.PLAIN,18);
-
         Title               = new JLabel("Title");
         TitleField          = new JTextField();
         Rating              = new JLabel("Rating");

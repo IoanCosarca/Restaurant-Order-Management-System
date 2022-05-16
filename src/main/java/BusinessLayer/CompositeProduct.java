@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeProduct extends MenuItem implements Serializable {
-    private List<BaseProduct> ProductComposition = new ArrayList<BaseProduct>();
+    private final List<BaseProduct> ProductComposition = new ArrayList<>();
 
     @Override
     public String computeTitle() {
@@ -79,14 +79,10 @@ public class CompositeProduct extends MenuItem implements Serializable {
 
     public void add(BaseProduct product) {
         ProductComposition.add(product);
-        System.out.println(ProductComposition);
-        System.out.println("");
     }
 
     public void remove(BaseProduct product) {
         ProductComposition.remove(product);
-        System.out.println(ProductComposition);
-        System.out.println("");
     }
 
     public BaseProduct getValueAt(int index) {

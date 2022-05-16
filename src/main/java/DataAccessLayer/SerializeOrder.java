@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SerializeOrder {
-    private File FileOrders;
+    private final File FileOrders;
 
     public SerializeOrder()
     {

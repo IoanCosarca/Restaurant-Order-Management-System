@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client extends JFrame {
-    private JLabel SearchLabel;
-    private JLabel SearchByTitle;
+    private final JLabel SearchLabel;
+    private final JLabel SearchByTitle;
     protected JTextField SearchTitle;
-    private JLabel SearchByRating;
+    private final JLabel SearchByRating;
     protected JTextField SearchRating;
-    private JLabel SearchByCalories;
+    private final JLabel SearchByCalories;
     protected JTextField SearchCalories;
-    private JLabel SearchByProtein;
+    private final JLabel SearchByProtein;
     protected JTextField SearchProtein;
-    private JLabel SearchByFat;
+    private final JLabel SearchByFat;
     protected JTextField SearchFat;
-    private JLabel SearchBySodium;
+    private final JLabel SearchBySodium;
     protected JTextField SearchSodium;
-    private JLabel SearchByPrice;
+    private final JLabel SearchByPrice;
     protected JTextField SearchPrice;
     protected JButton Search;
     protected JButton CreateOrder;

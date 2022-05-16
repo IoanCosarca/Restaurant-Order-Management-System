@@ -3,7 +3,6 @@ package BusinessLayer;
 import DataAccessLayer.CreateReports;
 import DataAccessLayer.SerializeItem;
 import DataAccessLayer.SerializeOrder;
-import DataAccessLayer.SerializeUser;
 import PresentationLayer.Observer;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -20,21 +19,28 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * @invariant isWellFormed()
+ */
 public class DeliveryService extends Observable implements IDeliveryServiceProcessing, Serializable {
     private List<BaseProduct> baseMenuItems;
     private List<MenuItem> menuItems;
-    private List<Observer> observers;
+    private final List<Observer> observers;
     private HashMap<Order, List<MenuItem>> OrderHashMap;
-    private SerializeUser serializeUser = new SerializeUser();
-    private SerializeItem serializeItem = new SerializeItem();
-    private SerializeOrder serializeOrder = new SerializeOrder();
-    private CreateReports createReports = new CreateReports();
+    private final SerializeItem serializeItem = new SerializeItem();
+    private final SerializeOrder serializeOrder = new SerializeOrder();
+    private final CreateReports createReports = new CreateReports();
 
     public DeliveryService()
     {
         baseMenuItems = new ArrayList<>();
         observers = new ArrayList<>();
         OrderHashMap = new HashMap<>();
+    }
+
+    protected boolean isWellFormed()
+    {
+        return true;
     }
 
     @Override
@@ -87,24 +93,23 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         return t -> map.putIfAbsent(nameExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    private Function<String, BaseProduct> ExtractItem = (line) ->
+    private final Function<String, BaseProduct> ExtractItem = (line) ->
     {
         String[] p = line.split(",");
-        String Title    = p[0];
-        double Rating   = Double.parseDouble(p[1]);
+        String Title = p[0];
+        double Rating = Double.parseDouble(p[1]);
         double Calories = Double.parseDouble(p[2]);
-        double Protein  = Double.parseDouble(p[3]);
-        double Fat      = Double.parseDouble(p[4]);
-        double Sodium   = Double.parseDouble(p[5]);
-        double Price    = Double.parseDouble(p[6]);
+        double Protein = Double.parseDouble(p[3]);
+        double Fat = Double.parseDouble(p[4]);
+        double Sodium = Double.parseDouble(p[5]);
+        double Price = Double.parseDouble(p[6]);
         return new BaseProduct(Title, Rating, Calories, Protein, Fat, Sodium, Price);
     };
 
     @Override
     public boolean addProduct(BaseProduct product)
     {
-        if (newProduct(product, menuItems))
-        {
+        if (newProduct(product, menuItems)) {
             menuItems.add(product);
             serializeItem.addProduct(product);
             return true;
@@ -112,12 +117,6 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         return false;
     }
 
-    /**
-     * Checks if the product to be inserted is new or if it already exists in the list
-     * @param item
-     * @param menuItems
-     * @return
-     */
     private boolean newProduct(MenuItem item, List<MenuItem> menuItems)
     {
         for (MenuItem i : menuItems) {
@@ -139,6 +138,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void modifyProduct(int index, MenuItem menuItem)
     {
+        assert index >= 0 && index < menuItems.size() && menuItem != null;
         menuItems.set(index, menuItem);
         serializeItem.updateProduct(index, menuItem);
     }
@@ -146,8 +146,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public boolean createProduct(CompositeProduct compositeProduct)
     {
-        if (newProduct(compositeProduct, menuItems))
-        {
+        if (newProduct(compositeProduct, menuItems)) {
             menuItems.add(compositeProduct);
             serializeItem.addProduct(compositeProduct);
             return true;
@@ -158,33 +157,31 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     @Override
     public void generateReport(int startHour, int endHour)
     {
-        List<Order> IntervalOrders = OrderHashMap.keySet().stream().filter(o -> o.getHour() >= startHour)
-                                                                    .filter(o -> o.getHour() <= endHour).collect(Collectors.toList());
+        List<Order> IntervalOrders = OrderHashMap.keySet().stream().filter(o -> o.getHour() >= startHour).filter(o -> o.getHour() <= endHour).collect(Collectors.toList());
         createReports.Report1(IntervalOrders);
     }
 
     @Override
     public void generateReport(int numberOfTimes)
     {
-        List<MenuItem> PopularProducts = importProducts().stream().filter(p -> p.computeTimesOrdered() > numberOfTimes).collect(Collectors.toList());
+        List<MenuItem> PopularProducts = importProducts().stream().filter(p -> p.computeTimesOrdered() >= numberOfTimes).collect(Collectors.toList());
         createReports.Report2(PopularProducts);
     }
 
     @Override
     public void generateReport(int numberOfTimes, double value)
     {
-        List<Order> SpecificOrders = OrderHashMap.keySet().stream().filter(o -> o.getClient().getOrdersPlaced() > numberOfTimes)
-                                                                    .filter(o -> calculateOrderValue(OrderHashMap.get(o)) > value).toList();
+        List<Order> SpecificOrders = OrderHashMap.keySet().stream().filter(o -> o.getClient().getOrdersPlaced() >= numberOfTimes)
+                .filter(o -> calculateOrderValue(OrderHashMap.get(o)) >= value).filter(distinctByName(o -> o.getClient().getUsername())).toList();
         createReports.Report3(numberOfTimes, value, SpecificOrders);
     }
 
     @Override
     public void generateReport(Date date)
     {
-        List<Order> OrdersInDay = OrderHashMap.keySet().stream().filter(o -> o.getDay() == date.getDay())
-                                                                    .filter(o -> o.getMonth() == date.getMonth())
-                                                                    .filter(o -> o.getYear() == date.getYear()).toList();
-        List<MenuItem> OrderedProducts = OrdersInDay.stream().map(i -> OrderHashMap.get(i)).flatMap(List::stream).toList();
+        List<Order> OrdersInDay = OrderHashMap.keySet().stream().filter(o -> o.getDay() == date.getDate())
+                .filter(o -> o.getMonth() == date.getMonth() + 1).filter(o -> o.getYear() == date.getYear() + 1900).toList();
+        List<MenuItem> OrderedProducts = OrdersInDay.stream().map(i -> OrderHashMap.get(i)).flatMap(List::stream).filter(distinctByName(p -> p.computeTitle())).toList();
         createReports.Report4(date, OrderedProducts);
     }
 
@@ -212,12 +209,11 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         OrderHashMap.put(order, orderComponents);
         serializeOrder.addOrders(OrderHashMap);
         createBill(order, orderComponents);
+        user.incOrdersPlaced();
         for (MenuItem item : orderComponents) {
             for (MenuItem menuItem : menuItems) {
-                if (item.equals(menuItem))
-                {
+                if (item.equals(menuItem)) {
                     menuItem.incTimesOrdered();
-                    System.out.println(menuItem.computeTimesOrdered());
                 }
             }
         }
@@ -238,7 +234,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
             DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
             Paragraph paragraph2 = new Paragraph(LocalDate.now() + " " + LocalTime.now().format(myFormat), font);
             document.add(paragraph2);
-            Paragraph paragraph3 = new Paragraph("Client: " + order.getClient().getUsername(), font);
+            Paragraph paragraph3 = new Paragraph("Client: " + order.getClient().getUsername() + "\n=========================", font);
             document.add(paragraph3);
             for (MenuItem menuItem : orderComponents)
             {
@@ -246,7 +242,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
                 document.add(paragraph);
             }
             double totalPrice = calculateOrderValue(orderComponents);
-            Paragraph paragraph4 = new Paragraph("Total price: " + totalPrice, font);
+            Paragraph paragraph4 = new Paragraph("=========================\nTotal price: " + totalPrice, font);
             document.add(paragraph4);
             document.close();
         }
