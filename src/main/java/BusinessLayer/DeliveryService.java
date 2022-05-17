@@ -252,6 +252,7 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
             for (MenuItem menuItem : menuItems) {
                 if (item.equals(menuItem)) {
                     menuItem.incTimesOrdered();
+                    item.incTimesOrdered();
                 }
             }
         }

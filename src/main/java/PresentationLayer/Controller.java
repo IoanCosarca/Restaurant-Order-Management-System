@@ -22,12 +22,11 @@ public class Controller implements ActionListener {
     private CompositeProduct compositeProduct;
     private List<MenuItem> OrderComponents;
 
-    public Controller(UserBLL userBLL, Login login, MessagePopUp message, DeliveryService deliveryService)
-    {
-        this.userBLL            = userBLL;
-        this.login              = login;
-        this.message            = message;
-        this.deliveryService    = deliveryService;
+    public Controller(UserBLL userBLL, Login login, MessagePopUp message, DeliveryService deliveryService) {
+        this.userBLL = userBLL;
+        this.login = login;
+        this.message = message;
+        this.deliveryService = deliveryService;
         register = new Register();
         administrator = new Administrator();
         employee = new Employee(deliveryService.getOrderHashMap());
@@ -42,11 +41,9 @@ public class Controller implements ActionListener {
         login.CAccount.addActionListener(this);
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         int iProductsAdmin = administrator.table.getSelectedRow();
-        if (e.getSource() == login.CAccount)
-        {
+        if (e.getSource() == login.CAccount) {
             login.setVisible(false);
             register = new Register();
             register.setVisible(true);
@@ -54,9 +51,9 @@ public class Controller implements ActionListener {
             register.GoBack.addActionListener(this);
         }
 
-        if (e.getSource() == register.Register)
-        {
-            User newUser = new User(register.UserName.getText(), register.Password.getText(), register.UserTypes.getSelectedItem().toString());
+        if (e.getSource() == register.Register) {
+            //User newUser = new User(register.UserName.getText(), register.Password.getText(), register.UserTypes.getSelectedItem().toString());
+            User newUser = new User(register.UserName.getText(), register.Password.getText(), "CLIENT");
             if (!userBLL.addUser(newUser)) {
                 message.showPopUp("User already exists!");
             }
@@ -64,8 +61,7 @@ public class Controller implements ActionListener {
             register.Password.setText(null);
         }
 
-        if (e.getSource() == register.GoBack)
-        {
+        if (e.getSource() == register.GoBack) {
             register.setVisible(false);
             login.Refresh();
         }
@@ -105,171 +101,145 @@ public class Controller implements ActionListener {
                         client.RemoveProduct.addActionListener(this);
                         client.LogOut.addActionListener(this);
                         login.setVisible(false);
-                    }
-                    else {
+                    } else {
                         message.showPopUp("No import was made");
                     }
                 }
             }
         }
 
-        if (e.getSource() == administrator.ImportProducts)
-        {
+        if (e.getSource() == administrator.ImportProducts) {
             administrator.SwitchButtons(true);
-            if (administrator.model.getRowCount() == 0)
-            {
+            if (administrator.model.getRowCount() == 0) {
                 menuItems = deliveryService.importProducts();
                 administrator.addRows(menuItems);
             }
         }
 
-        if (e.getSource() == administrator.AddProduct)
-        {
-            try
-            {
+        if (e.getSource() == administrator.AddProduct) {
+            try {
                 BaseProduct baseProduct = computeProduct();
                 if (deliveryService.addProduct(baseProduct)) {
                     administrator.addRow(baseProduct);
-                }
-                else {
+                } else {
                     message.showPopUp("Product already exists");
                 }
                 administrator.Refresh();
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 message.showPopUp("Invalid Product Details!");
             }
         }
 
         if (e.getSource() == administrator.DeleteProduct) {
-            if (iProductsAdmin != -1)
-            {
+            if (iProductsAdmin != -1) {
                 deliveryService.deleteProduct(iProductsAdmin);
                 administrator.removeRow(iProductsAdmin);
                 administrator.Refresh();
             }
         }
 
-        if (e.getSource() == administrator.ModifyProduct)
-        {
+        if (e.getSource() == administrator.ModifyProduct) {
             MenuItem menuItem = computeProduct();
             deliveryService.modifyProduct(iProductsAdmin, menuItem);
             administrator.updateRow(iProductsAdmin, menuItem);
         }
 
-        if (e.getSource() == administrator.Add)
-        {
+        if (e.getSource() == administrator.Add) {
             BaseProduct baseProduct = (BaseProduct) deliveryService.importProducts().get(iProductsAdmin);
             compositeProduct.add(baseProduct);
             administrator.addComponent(baseProduct);
         }
 
-        if (e.getSource() == administrator.Remove)
-        {
+        if (e.getSource() == administrator.Remove) {
             int index = administrator.tableCompose.getSelectedRow();
-            if (administrator.modelCompose.getRowCount() != 0)
-            {
+            if (administrator.modelCompose.getRowCount() != 0) {
                 BaseProduct baseProduct = compositeProduct.getValueAt(index);
                 compositeProduct.remove(baseProduct);
                 administrator.removeComponent(index);
             }
         }
 
-        if (e.getSource() == administrator.CreateProduct)
-        {
-            if (!Objects.equals(administrator.TitleField.getText(),""))
-            {
+        if (e.getSource() == administrator.CreateProduct) {
+            if (!Objects.equals(administrator.TitleField.getText(), "")) {
                 compositeProduct.setTitle(administrator.TitleField.getText());
-                if (deliveryService.createProduct(compositeProduct))
-                {
+                if (deliveryService.createProduct(compositeProduct)) {
                     administrator.addRow(compositeProduct);
                     compositeProduct.setTimesOrdered();
                     administrator.RefreshCompose();
                     compositeProduct = new CompositeProduct();
-                }
-                else {
+                } else {
                     message.showPopUp("Product already exists");
                 }
-            }
-            else {
+            } else {
                 message.showPopUp("Type a name for the new product");
             }
         }
 
-        if (e.getSource() == administrator.GenerateReports)
-        {
-            try
-            {
-                int StartHour       = Integer.parseInt(administrator.StartField.getText());
-                int EndHour         = Integer.parseInt(administrator.EndField.getText());
-                int NumberOfTimes   = Integer.parseInt(administrator.NumberField.getText());
-                double Value        = Double.parseDouble(administrator.ValueField.getText());
+        if (e.getSource() == administrator.GenerateReports) {
+            try {
+                int StartHour = Integer.parseInt(administrator.StartField.getText());
+                int EndHour = Integer.parseInt(administrator.EndField.getText());
+                int NumberOfTimes = Integer.parseInt(administrator.NumberField.getText());
+                double Value = Double.parseDouble(administrator.ValueField.getText());
                 SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
                 Date date = myFormat.parse(administrator.DateField.getText());
                 deliveryService.generateReport(StartHour, EndHour);
                 deliveryService.generateReport(NumberOfTimes);
+                System.out.println("OK");
                 deliveryService.generateReport(NumberOfTimes, Value);
                 deliveryService.generateReport(date);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 message.showPopUp("Invalid Parameters to generate reports");
             }
         }
 
-        if (e.getSource() == administrator.LogOut)
-        {
+        if (e.getSource() == administrator.LogOut) {
             administrator.setVisible(false);
             login.Refresh();
         }
 
-        if (e.getSource() == client.Search)
-        {
+        if (e.getSource() == client.Search) {
             String keyword = client.SearchTitle.getText();
             double rating, calories, protein, fat, sodium, price;
-            if (!Objects.equals(client.SearchRating.getText(),"")) {
+            if (!Objects.equals(client.SearchRating.getText(), ""))
                 rating = Double.parseDouble(client.SearchRating.getText());
-            }
             else rating = -1;
-            if (!Objects.equals(client.SearchCalories.getText(),""))
+            if (!Objects.equals(client.SearchCalories.getText(), ""))
                 calories = Double.parseDouble(client.SearchCalories.getText());
             else calories = -1;
-            if (!Objects.equals(client.SearchProtein.getText(),""))
+            if (!Objects.equals(client.SearchProtein.getText(), ""))
                 protein = Double.parseDouble(client.SearchProtein.getText());
             else protein = -1;
-            if (!Objects.equals(client.SearchFat.getText(),""))
+            if (!Objects.equals(client.SearchFat.getText(), ""))
                 fat = Double.parseDouble(client.SearchFat.getText());
             else fat = -1;
-            if (!Objects.equals(client.SearchSodium.getText(),""))
+            if (!Objects.equals(client.SearchSodium.getText(), ""))
                 sodium = Double.parseDouble(client.SearchSodium.getText());
             else sodium = -1;
-            if (!Objects.equals(client.SearchPrice.getText(),""))
+            if (!Objects.equals(client.SearchPrice.getText(), ""))
                 price = Double.parseDouble(client.SearchPrice.getText());
             else price = -1;
             results = deliveryService.searchProducts(keyword, rating, calories, protein, fat, sodium, price);
             client.filterTable(results);
         }
 
-        if (e.getSource() == client.AddProduct)
-        {
+        if (e.getSource() == client.AddProduct) {
             int iClient = client.MenuTable.getSelectedRow();
             MenuItem menuItem = results.get(iClient);
             OrderComponents.add(menuItem);
             client.addToOrder(menuItem);
         }
 
-        if (e.getSource() == client.RemoveProduct)
-        {
+        if (e.getSource() == client.RemoveProduct) {
             int iOrder = client.OrderTable.getSelectedRow();
-            if (client.Order.getRowCount() != 0)
-            {
+            if (client.Order.getRowCount() != 0) {
                 MenuItem menuItem = OrderComponents.get(iOrder);
                 OrderComponents.remove(menuItem);
                 client.removeFromOrder(iOrder);
             }
         }
 
-        if (e.getSource() == client.CreateOrder)
-        {
+        if (e.getSource() == client.CreateOrder) {
             deliveryService.createOrder(CurrentUser, OrderComponents);
             userBLL.updateUser(CurrentUser);
             message.showPopUp("A new order was placed");
@@ -277,22 +247,20 @@ public class Controller implements ActionListener {
             OrderComponents = new ArrayList<>();
         }
 
-        if (e.getSource() == client.LogOut)
-        {
+        if (e.getSource() == client.LogOut) {
             client.setVisible(false);
             login.Refresh();
         }
     }
 
-    private BaseProduct computeProduct()
-    {
-        String Title    = administrator.TitleField.getText();
-        double Rating   = Double.parseDouble(administrator.RatingField.getText());
+    private BaseProduct computeProduct() {
+        String Title = administrator.TitleField.getText();
+        double Rating = Double.parseDouble(administrator.RatingField.getText());
         double Calories = Double.parseDouble(administrator.CaloriesField.getText());
-        double Protein  = Double.parseDouble(administrator.ProteinField.getText());
-        double Fat      = Double.parseDouble(administrator.FatField.getText());
-        double Sodium   = Double.parseDouble(administrator.SodiumField.getText());
-        double Price    = Double.parseDouble(administrator.PriceField.getText());
+        double Protein = Double.parseDouble(administrator.ProteinField.getText());
+        double Fat = Double.parseDouble(administrator.FatField.getText());
+        double Sodium = Double.parseDouble(administrator.SodiumField.getText());
+        double Price = Double.parseDouble(administrator.PriceField.getText());
         return new BaseProduct(Title, Rating, Calories, Protein, Fat, Sodium, Price);
     }
 }

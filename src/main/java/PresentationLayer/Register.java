@@ -8,8 +8,8 @@ public class Register extends JFrame {
     protected JTextField UserName;
     private final JLabel Pass;
     protected JTextField Password;
-    private final JLabel Type;
-    protected JComboBox<String> UserTypes;
+    /*private final JLabel Type;
+    protected JComboBox<String> UserTypes;*/
     protected JButton Register;
     protected JButton GoBack;
 
@@ -28,12 +28,12 @@ public class Register extends JFrame {
         UserName        = new JTextField();
         Pass            = new JLabel("Password");
         Password        = new JTextField();
-        Type            = new JLabel("Type");
+        /*Type          = new JLabel("Type");
         String[] types  = new String[3];
         types[0]        = "ADMINISTRATOR";
         types[1]        = "EMPLOYEE";
         types[2]        = "CLIENT";
-        UserTypes       = new JComboBox<>(types);
+        UserTypes       = new JComboBox<>(types);*/
         Register        = new JButton("REGISTER");
         GoBack          = new JButton("GO BACK");
 
@@ -50,12 +50,12 @@ public class Register extends JFrame {
         Password.setFont(MyFont);
         RegisterCredentials.add(Password);
 
-        Type.setFont(MyFont);
+        /*Type.setFont(MyFont);
         Type.setBounds(50,200,100,50);
         getContentPane().add(Type);
         UserTypes.setFont(MyFont);
         UserTypes.setBounds(250,200,200,50);
-        getContentPane().add(UserTypes);
+        getContentPane().add(UserTypes);*/
 
         Register.setFont(MyFont);
         Register.setBounds(50, 300,150,50);
