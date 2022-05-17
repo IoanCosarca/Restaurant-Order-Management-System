@@ -61,6 +61,11 @@ public class Order implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return (orderDate.getSecond() + orderDate.getMinute() * 60 + orderDate.getHour() * 3600) % 10;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (this == obj) {

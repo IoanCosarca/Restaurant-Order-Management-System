@@ -146,6 +146,7 @@ public class Controller implements ActionListener {
             {
                 deliveryService.deleteProduct(iProductsAdmin);
                 administrator.removeRow(iProductsAdmin);
+                administrator.Refresh();
             }
         }
 

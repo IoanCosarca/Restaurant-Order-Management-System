@@ -181,7 +181,7 @@ public class Administrator extends JFrame {
         table               = new JTable(model);
         JScrollPane slider  = new JScrollPane(table);
         slider.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        slider.setBounds(500,25,800,350);
+        slider.setBounds(500,25,850,350);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -208,7 +208,7 @@ public class Administrator extends JFrame {
         tableCompose    = new JTable(modelCompose);
         scroll          = new JScrollPane(tableCompose);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setBounds(500,450,800,200);
+        scroll.setBounds(500,450,850,200);
         getContentPane().add(scroll);
 
         Remove.setFont(FontBtn);
@@ -276,7 +276,7 @@ public class Administrator extends JFrame {
         tableCompose = new JTable(modelCompose);
         scroll = new JScrollPane(tableCompose);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setBounds(500,450,800,200);
+        scroll.setBounds(500,450,850,200);
         getContentPane().add(scroll);
     }
 

@@ -12,8 +12,17 @@ public class CompositeProduct extends MenuItem implements Serializable {
         return this.title;
     }
 
-    public void setTitle(String title) {
-        this.title = "[C] " + title;
+    public void setTitle(String title)
+    {
+        String s = title + "[";
+        for (BaseProduct product : ProductComposition)
+        {
+            s = s + product.toString();
+            if (ProductComposition.indexOf(product) != ProductComposition.size() - 1) {
+                s = s + ", ";
+            }
+        }
+        this.title = s + "]";
     }
 
     @Override
