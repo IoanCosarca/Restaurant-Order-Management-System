@@ -61,13 +61,6 @@ public class Order implements Serializable {
     }
 
     @Override
-    public int hashCode()
-    {
-        int m = 11;
-        return (orderID + client.hashCode() + orderDate.hashCode()) % m;
-    }
-
-    @Override
     public boolean equals(Object obj)
     {
         if (this == obj) {

@@ -9,7 +9,7 @@ public class Login extends JFrame {
     private final JLabel Pass;
     protected JTextField Password;
     protected JButton Login;
-    protected JButton Register;
+    protected JButton CAccount;
 
     public Login()
     {
@@ -27,7 +27,7 @@ public class Login extends JFrame {
         Pass            = new JLabel("Password");
         Password        = new JTextField();
         Login           = new JButton("LOGIN");
-        Register        = new JButton("REGISTER");
+        CAccount        = new JButton("CREATE ACCOUNT");
 
         JPanel LoginCredentials = new JPanel();
         getContentPane().add(LoginCredentials);
@@ -42,13 +42,11 @@ public class Login extends JFrame {
         Password.setFont(MyFont);
         LoginCredentials.add(Password);
 
-        Login.setFont(MyFont);
         Login.setBounds(50, 250,150,50);
         getContentPane().add(Login);
 
-        Register.setFont(MyFont);
-        Register.setBounds(250,250,150,50);
-        getContentPane().add(Register);
+        CAccount.setBounds(250,250,150,50);
+        getContentPane().add(CAccount);
 
         this.setVisible(true);
     }

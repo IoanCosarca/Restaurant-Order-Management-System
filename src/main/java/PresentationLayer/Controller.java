@@ -39,13 +39,13 @@ public class Controller implements ActionListener {
         deliveryService.registerObserver(employee);
         deliveryService.importOrderDetails();
         login.Login.addActionListener(this);
-        login.Register.addActionListener(this);
+        login.CAccount.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e)
     {
         int iProductsAdmin = administrator.table.getSelectedRow();
-        if (e.getSource() == login.Register)
+        if (e.getSource() == login.CAccount)
         {
             login.setVisible(false);
             register = new Register();
